@@ -6,40 +6,43 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import { inject } from "@vercel/analytics";
+import { HelmetProvider } from "react-helmet-async";
 
 inject();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "#fff",
-              color: "#363636",
-              borderRadius: "0.5rem",
-              boxShadow:
-                "0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05)",
-            },
-            success: {
-              iconTheme: {
-                primary: "#10B981",
-                secondary: "#ECFDF5",
+    <HelmetProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 1500,
+              style: {
+                background: "#fff",
+                color: "#363636",
+                borderRadius: "0.5rem",
+                boxShadow:
+                  "0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05)",
               },
-            },
-            error: {
-              iconTheme: {
-                primary: "#EF4444",
-                secondary: "#FEF2F2",
+              success: {
+                iconTheme: {
+                  primary: "#10B981",
+                  secondary: "#ECFDF5",
+                },
               },
-            },
-          }}
-        />
-      </AuthProvider>
-    </BrowserRouter>
+              error: {
+                iconTheme: {
+                  primary: "#EF4444",
+                  secondary: "#FEF2F2",
+                },
+              },
+            }}
+          />
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </StrictMode>
 );
