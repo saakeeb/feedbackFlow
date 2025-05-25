@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MessageSquare, CheckCircle, Share2, UserPlus } from 'lucide-react';
+import { MessageSquare, Share2, UserPlus } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useAuth } from '../hooks/useAuth';
 
