@@ -5,10 +5,8 @@ import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
-import { inject } from "@vercel/analytics";
 import { HelmetProvider } from "react-helmet-async";
-
-inject();
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,6 +14,7 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <AuthProvider>
           <App />
+          <SpeedInsights />
           <Toaster
             position="top-right"
             toastOptions={{
