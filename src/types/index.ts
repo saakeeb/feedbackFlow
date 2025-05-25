@@ -40,4 +40,5 @@ export interface AuthContextType extends AuthState {
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }

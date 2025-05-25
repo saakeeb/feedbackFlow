@@ -1,18 +1,19 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import { AuthProvider } from './contexts/AuthContext';
-import { Toaster } from 'react-hot-toast';
-import './index.css';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "react-hot-toast";
+import "./index.css";
+import { inject } from "@vercel/analytics";
+
+inject();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <SpeedInsights />
         <Toaster
           position="top-right"
           toastOptions={{

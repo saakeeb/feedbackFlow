@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, UserPlus, AlertCircle } from 'lucide-react';
+import { MessageSquare, UserPlus, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Card from '../../components/ui/Card';
@@ -11,8 +11,11 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, signInWithFacebook } = useAuth();
 
@@ -38,7 +41,7 @@ const SignUpPage = () => {
       setIsLoading(true);
       setError('');
       await signUp(email, password, fullName);
-      navigate('/dashboard');
+      setIsEmailSent(true);
     } catch (err) {
       setError('Failed to create account. This email might already be in use.');
     } finally {
@@ -51,7 +54,6 @@ const SignUpPage = () => {
       setIsLoading(true);
       setError('');
       await signInWithGoogle();
-      // Note: redirect is handled by the OAuth provider
     } catch (err) {
       setError('Failed to sign up with Google. Please try again.');
       setIsLoading(false);
@@ -63,12 +65,35 @@ const SignUpPage = () => {
       setIsLoading(true);
       setError('');
       await signInWithFacebook();
-      // Note: redirect is handled by the OAuth provider
     } catch (err) {
       setError('Failed to sign up with Facebook. Please try again.');
       setIsLoading(false);
     }
   };
+
+  if (isEmailSent) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-md w-full">
+          <Card>
+            <div className="text-center p-6">
+              <MessageSquare className="h-12 w-12 text-primary-600 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
+              <p className="text-gray-600 mb-6">
+                We've sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => navigate('/signin')}
+              >
+                Return to Sign In
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -119,29 +144,55 @@ const SignUpPage = () => {
               disabled={isLoading}
             />
             
-            <Input
-              label="Password"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <Input
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                autoComplete="new-password"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
             
-            <Input
-              label="Confirm Password"
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <Input
+                label="Confirm Password"
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                autoComplete="new-password"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
             
             <div>
               <Button
