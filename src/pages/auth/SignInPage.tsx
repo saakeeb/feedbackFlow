@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, LogIn, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { MessageSquare, LogIn, Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Card from '../../components/ui/Card';
@@ -9,10 +9,12 @@ import { useAuth } from '../../hooks/useAuth';
 const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signInWithGoogle, signInWithFacebook } = useAuth();
+  const { signIn, signInWithGoogle, signInWithFacebook, resetPassword } = useAuth();
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
@@ -34,12 +36,31 @@ const SignInPage = () => {
     }
   };
 
+  const handleForgotPassword = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      setError('');
+      await resetPassword(email);
+      setShowForgotPassword(false);
+    } catch (err) {
+      setError('Failed to send reset password link. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
       setError('');
       await signInWithGoogle();
-      // Note: redirect is handled by the OAuth provider
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.');
       setIsLoading(false);
@@ -51,7 +72,6 @@ const SignInPage = () => {
       setIsLoading(true);
       setError('');
       await signInWithFacebook();
-      // Note: redirect is handled by the OAuth provider
     } catch (err) {
       setError('Failed to sign in with Facebook. Please try again.');
       setIsLoading(false);
@@ -82,44 +102,113 @@ const SignInPage = () => {
             </div>
           )}
           
-          <form className="space-y-6" onSubmit={handleSignIn}>
-            <Input
-              label="Email Address"
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your.email@example.com"
-              required
-              autoComplete="email"
-              disabled={isLoading}
-            />
-            
-            <Input
-              label="Password"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
-              disabled={isLoading}
-            />
-            
-            <div>
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                isLoading={isLoading}
+          {!showForgotPassword ? (
+            <form className="space-y-6" onSubmit={handleSignIn}>
+              <Input
+                label="Email Address"
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                required
+                autoComplete="email"
                 disabled={isLoading}
-                leftIcon={!isLoading && <LogIn className="w-4 h-4" />}
-              >
-                Sign In
-              </Button>
-            </div>
-          </form>
+              />
+              
+              <div className="relative">
+                <Input
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="font-medium text-primary-600 hover:text-primary-500"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              </div>
+              
+              <div>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  fullWidth
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                  leftIcon={!isLoading && <LogIn className="w-4 h-4" />}
+                >
+                  Sign In
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form className="space-y-6" onSubmit={handleForgotPassword}>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Reset Password</h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Enter your email address and we'll send you a link to reset your password.
+                </p>
+              </div>
+              
+              <Input
+                label="Email Address"
+                type="email"
+                id="reset-email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                required
+                autoComplete="email"
+                disabled={isLoading}
+              />
+              
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  fullWidth
+                  onClick={() => setShowForgotPassword(false)}
+                  disabled={isLoading}
+                >
+                  Back to Sign In
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  fullWidth
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                >
+                  Send Reset Link
+                </Button>
+              </div>
+            </form>
+          )}
           
           <div className="mt-6">
             <div className="relative">

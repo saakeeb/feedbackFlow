@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { error: profileError } = await supabase.from("profiles").insert({
         id: userId,
-        full_name: fullName || email.split("@")[0], // Use email username as fallback
+        full_name: fullName || email.split("@")[0],
       });
 
       if (profileError) throw profileError;
@@ -47,21 +47,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
 
-      // Check if user is already authenticated
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       if (session?.user) {
         try {
-          // Try to fetch existing profile
           const { data: profile, error } = await supabase
             .from("profiles")
             .select("*")
             .eq("id", session.user.id)
             .single();
 
-          // If no profile exists or there was an error, create one
           if (!profile || error) {
             const { data: newProfile } = await createProfile(
               session.user.id,
@@ -85,7 +82,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         } catch (error) {
           console.error("Error handling profile:", error);
-          // Set basic user info even if profile handling fails
           setUser({
             id: session.user.id,
             email: session.user.email || "",
@@ -217,6 +213,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             data: {
               full_name: fullName,
             },
+            emailRedirectTo: `${window.location.origin}/verify`,
           },
         });
 
@@ -237,7 +234,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               avatarUrl: profile?.avatar_url,
             });
 
-            toast.success("Account created successfully!");
+            toast.success("Please check your email to verify your account!");
           } catch (error) {
             console.error("Error creating profile during signup:", error);
             setUser({
@@ -256,8 +253,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
       }
     },
-    [createProfile] // Add dependencies used inside the callback
+    [createProfile]
   );
+
+  const resetPassword = async (email: string) => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      toast.success("Password reset link sent to your email!");
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      toast.error("Failed to send reset password link");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const signOut = async () => {
     try {
@@ -288,6 +304,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signUp,
       signOut,
       checkAuth,
+      resetPassword,
     }),
     [user, isAuthenticated, isLoading, checkAuth, signIn, signUp]
   );
