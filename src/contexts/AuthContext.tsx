@@ -19,15 +19,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isAuthenticated = useMemo(() => !!user, [user]);
 
+  const getUserAnalytics = () => {
+    return {
+      ip_address: null, // Will be captured by Supabase
+      browser: navigator.userAgent,
+      operating_system: navigator.platform,
+      device_type: /Mobile|Tablet|iPad|iPhone|Android/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      referrer: document.referrer,
+      screen_resolution: `${window.screen.width}x${window.screen.height}`,
+      language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      pages_visited: [window.location.pathname],
+      time_of_visit: new Date().toISOString(),
+      time_spent: 0, // Will be updated during session
+    };
+  };
+
   const createProfile = useCallback(async (
     userId: string,
     email: string,
     fullName?: string
   ) => {
     try {
+      const analytics = getUserAnalytics();
+      
       const { error: profileError } = await supabase.from("profiles").insert({
         id: userId,
         full_name: fullName || email.split("@")[0],
+        email,
+        ...analytics,
       });
 
       if (profileError) throw profileError;
