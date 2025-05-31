@@ -24,7 +24,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       ip_address: null, // Will be captured by Supabase
       browser: navigator.userAgent,
       operating_system: navigator.platform,
-      device_type: /Mobile|Tablet|iPad|iPhone|Android/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      device_type: /Mobile|Tablet|iPad|iPhone|Android/.test(navigator.userAgent)
+        ? "mobile"
+        : "desktop",
       referrer: document.referrer,
       screen_resolution: `${window.screen.width}x${window.screen.height}`,
       language: navigator.language,
@@ -35,33 +37,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   };
 
-  const createProfile = useCallback(async (
-    userId: string,
-    email: string,
-    fullName?: string
-  ) => {
-    try {
-      const analytics = getUserAnalytics();
-      
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: userId,
-        full_name: fullName || email.split("@")[0],
-        email,
-        ...analytics,
-      });
+  const createProfile = useCallback(
+    async (userId: string, email: string, fullName?: string) => {
+      try {
+        const analytics = getUserAnalytics();
 
-      if (profileError) throw profileError;
+        const { error: profileError } = await supabase.from("profiles").insert({
+          id: userId,
+          full_name: fullName || email.split("@")[0],
+          email,
+          ...analytics,
+        });
 
-      return await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-    } catch (error) {
-      console.error("Error creating profile:", error);
-      throw error;
-    }
-  }, []);
+        if (profileError) throw profileError;
+
+        return await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", userId)
+          .single();
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        throw error;
+      }
+    },
+    []
+  );
 
   const checkAuth = useCallback(async () => {
     try {
@@ -187,7 +188,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
 
@@ -207,7 +211,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "facebook",
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
 
@@ -280,7 +287,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: "http://example.com/account/reset-password",
       });
 
       if (error) throw error;

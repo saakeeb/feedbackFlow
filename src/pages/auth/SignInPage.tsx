@@ -1,36 +1,48 @@
-import { useState, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, LogIn, Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import Card from '../../components/ui/Card';
-import { useAuth } from '../../hooks/useAuth';
+import { useState, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  MessageSquare,
+  LogIn,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Card from "../../components/ui/Card";
+import { useAuth } from "../../hooks/useAuth";
+import { FacebookIcon, GoogleIcon } from "../../components/ui/Icon";
 
 const SignInPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signInWithGoogle, signInWithFacebook, resetPassword } = useAuth();
+  const { signIn, signInWithGoogle, signInWithFacebook, resetPassword } =
+    useAuth();
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
-      setError('Please enter both email and password');
+      setError("Please enter both email and password");
       return;
     }
-    
+
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await signIn(email, password);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Invalid email or password. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -38,19 +50,23 @@ const SignInPage = () => {
 
   const handleForgotPassword = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
-      setError('Please enter your email address');
+      setError("Please enter your email address");
       return;
     }
-    
+
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await resetPassword(email);
       setShowForgotPassword(false);
     } catch (err) {
-      setError('Failed to send reset password link. Please try again.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to send reset password link. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -59,10 +75,14 @@ const SignInPage = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await signInWithGoogle();
     } catch (err) {
-      setError('Failed to sign in with Google. Please try again.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to sign in with Google. Please try again.";
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -70,10 +90,14 @@ const SignInPage = () => {
   const handleFacebookSignIn = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await signInWithFacebook();
     } catch (err) {
-      setError('Failed to sign in with Facebook. Please try again.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to sign in with Facebook. Please try again.";
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -85,15 +109,20 @@ const SignInPage = () => {
           <div className="flex justify-center">
             <MessageSquare className="h-12 w-12 text-primary-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Sign in to your account
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Or{' '}
-            <Link to="/signup" className="font-medium text-primary-600 hover:text-primary-500">
+            Or{" "}
+            <Link
+              to="/signup"
+              className="font-medium text-primary-600 hover:text-primary-500"
+            >
               create a new account
             </Link>
           </p>
         </div>
-        
+
         <Card>
           {error && (
             <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md flex items-start">
@@ -101,7 +130,7 @@ const SignInPage = () => {
               <span>{error}</span>
             </div>
           )}
-          
+
           {!showForgotPassword ? (
             <form className="space-y-6" onSubmit={handleSignIn}>
               <Input
@@ -115,7 +144,7 @@ const SignInPage = () => {
                 autoComplete="email"
                 disabled={isLoading}
               />
-              
+
               <div className="relative">
                 <Input
                   label="Password"
@@ -140,7 +169,7 @@ const SignInPage = () => {
                   )}
                 </button>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="text-sm">
                   <button
@@ -152,7 +181,7 @@ const SignInPage = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div>
                 <Button
                   type="submit"
@@ -169,12 +198,15 @@ const SignInPage = () => {
           ) : (
             <form className="space-y-6" onSubmit={handleForgotPassword}>
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Reset Password</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Reset Password
+                </h3>
                 <p className="text-sm text-gray-500 mb-4">
-                  Enter your email address and we'll send you a link to reset your password.
+                  Enter your email address and we'll send you a link to reset
+                  your password.
                 </p>
               </div>
-              
+
               <Input
                 label="Email Address"
                 type="email"
@@ -186,7 +218,7 @@ const SignInPage = () => {
                 autoComplete="email"
                 disabled={isLoading}
               />
-              
+
               <div className="flex gap-3">
                 <Button
                   type="button"
@@ -209,33 +241,39 @@ const SignInPage = () => {
               </div>
             </form>
           )}
-          
+
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
               </div>
             </div>
-            
+
             <div className="mt-6 grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant="secondary"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
+                className="group flex items-center justify-center gap-2"
               >
-                Google
+                <GoogleIcon />
+                <span>Google</span>
               </Button>
               <Button
                 type="button"
                 variant="secondary"
                 onClick={handleFacebookSignIn}
                 disabled={isLoading}
+                className="group flex items-center justify-center gap-2"
               >
-                Facebook
+                <FacebookIcon />
+                <span>Facebook</span>
               </Button>
             </div>
           </div>

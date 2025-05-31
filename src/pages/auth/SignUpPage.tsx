@@ -1,19 +1,26 @@
-import { useState, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, UserPlus, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import Card from '../../components/ui/Card';
-import { useAuth } from '../../hooks/useAuth';
+import { useState, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  MessageSquare,
+  UserPlus,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Card from "../../components/ui/Card";
+import { useAuth } from "../../hooks/useAuth";
+import { FacebookIcon, GoogleIcon } from "../../components/ui/Icon";
 
 const SignUpPage = () => {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const navigate = useNavigate();
@@ -21,29 +28,33 @@ const SignUpPage = () => {
 
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!fullName || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       return;
     }
-    
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
-    
+
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError("Password must be at least 6 characters long");
       return;
     }
-    
+
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await signUp(email, password, fullName);
       setIsEmailSent(true);
     } catch (err) {
-      setError('Failed to create account. This email might already be in use.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to create account. This email might already be in use.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +63,14 @@ const SignUpPage = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await signInWithGoogle();
     } catch (err) {
-      setError('Failed to sign up with Google. Please try again.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to sign up with Google. Please try again.";
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -63,10 +78,14 @@ const SignUpPage = () => {
   const handleFacebookSignIn = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       await signInWithFacebook();
     } catch (err) {
-      setError('Failed to sign up with Facebook. Please try again.');
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to sign up with Facebook. Please try again.";
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -78,14 +97,15 @@ const SignUpPage = () => {
           <Card>
             <div className="text-center p-6">
               <MessageSquare className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Check your email
+              </h2>
               <p className="text-gray-600 mb-6">
-                We've sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
+                We've sent a verification link to <strong>{email}</strong>.
+                Please check your email and click the link to verify your
+                account.
               </p>
-              <Button
-                variant="primary"
-                onClick={() => navigate('/signin')}
-              >
+              <Button variant="primary" onClick={() => navigate("/signin")}>
                 Return to Sign In
               </Button>
             </div>
@@ -102,15 +122,20 @@ const SignUpPage = () => {
           <div className="flex justify-center">
             <MessageSquare className="h-12 w-12 text-primary-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create a new account</h2>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Create a new account
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Or{' '}
-            <Link to="/signin" className="font-medium text-primary-600 hover:text-primary-500">
+            Or{" "}
+            <Link
+              to="/signin"
+              className="font-medium text-primary-600 hover:text-primary-500"
+            >
               sign in to your existing account
             </Link>
           </p>
         </div>
-        
+
         <Card>
           {error && (
             <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md flex items-start">
@@ -118,7 +143,7 @@ const SignUpPage = () => {
               <span>{error}</span>
             </div>
           )}
-          
+
           <form className="space-y-6" onSubmit={handleSignUp}>
             <Input
               label="Full Name"
@@ -131,7 +156,7 @@ const SignUpPage = () => {
               autoComplete="name"
               disabled={isLoading}
             />
-            
+
             <Input
               label="Email Address"
               type="email"
@@ -143,7 +168,7 @@ const SignUpPage = () => {
               autoComplete="email"
               disabled={isLoading}
             />
-            
+
             <div className="relative">
               <Input
                 label="Password"
@@ -168,7 +193,7 @@ const SignUpPage = () => {
                 )}
               </button>
             </div>
-            
+
             <div className="relative">
               <Input
                 label="Confirm Password"
@@ -193,7 +218,7 @@ const SignUpPage = () => {
                 )}
               </button>
             </div>
-            
+
             <div>
               <Button
                 type="submit"
@@ -207,33 +232,39 @@ const SignUpPage = () => {
               </Button>
             </div>
           </form>
-          
+
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
               </div>
             </div>
-            
+
             <div className="mt-6 grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant="secondary"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
+                className="group flex items-center justify-center gap-2"
               >
-                Google
+                <GoogleIcon />
+                <span>Google</span>
               </Button>
               <Button
                 type="button"
                 variant="secondary"
                 onClick={handleFacebookSignIn}
                 disabled={isLoading}
+                className="group flex items-center justify-center gap-2"
               >
-                Facebook
+                <FacebookIcon />
+                <span>Facebook</span>
               </Button>
             </div>
           </div>
