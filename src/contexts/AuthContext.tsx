@@ -29,6 +29,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       screen_resolution: `${window.screen.width}x${window.screen.height}`,
       language: navigator.language,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      pages_visited: [window.location.pathname],
+      time_of_visit: new Date().toISOString(),
+      time_spent: 0, // Will be updated during session
     };
   };
 
