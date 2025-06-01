@@ -1,4 +1,7 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpSchema, type SignUpFormData } from "./Schema";
 import { Link, useNavigate } from "react-router-dom";
 import {
   MessageSquare,
@@ -14,40 +17,29 @@ import { useAuth } from "../../hooks/useAuth";
 import { FacebookIcon, GoogleIcon } from "../../components/ui/Icon";
 
 const SignUpPage = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
+  const [emailSent, setEmailSent] = useState<string>("");
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, signInWithFacebook } = useAuth();
 
-  const handleSignUp = async (e: FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
 
-    if (!fullName || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
+  const onSubmit = async (data: SignUpFormData) => {
     try {
       setIsLoading(true);
       setError("");
-      await signUp(email, password, fullName);
+      setEmailSent(data.email);
+      await signUp(data.email, data.password, data.fullName);
       setIsEmailSent(true);
     } catch (err) {
       const errorMessage =
@@ -101,7 +93,7 @@ const SignUpPage = () => {
                 Check your email
               </h2>
               <p className="text-gray-600 mb-6">
-                We've sent a verification link to <strong>{email}</strong>.
+                We've sent a verification link to <strong>{emailSent}</strong>.
                 Please check your email and click the link to verify your
                 account.
               </p>
@@ -144,28 +136,22 @@ const SignUpPage = () => {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSignUp}>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <Input
               label="Full Name"
               type="text"
-              id="fullName"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              {...register("fullName")}
               placeholder="John Doe"
-              required
-              autoComplete="name"
+              error={errors.fullName?.message}
               disabled={isLoading}
             />
 
             <Input
               label="Email Address"
               type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email")}
               placeholder="your.email@example.com"
-              required
-              autoComplete="email"
+              error={errors.email?.message}
               disabled={isLoading}
             />
 
@@ -173,12 +159,9 @@ const SignUpPage = () => {
               <Input
                 label="Password"
                 type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password")}
                 placeholder="••••••••"
-                required
-                autoComplete="new-password"
+                error={errors.password?.message}
                 disabled={isLoading}
               />
               <button
@@ -198,12 +181,9 @@ const SignUpPage = () => {
               <Input
                 label="Confirm Password"
                 type={showConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                {...register("confirmPassword")}
                 placeholder="••••••••"
-                required
-                autoComplete="new-password"
+                error={errors.confirmPassword?.message}
                 disabled={isLoading}
               />
               <button

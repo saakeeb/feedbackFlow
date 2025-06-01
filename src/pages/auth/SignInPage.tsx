@@ -1,41 +1,48 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  MessageSquare,
-  LogIn,
-  AlertCircle,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { MessageSquare, LogIn, AlertCircle, Eye, EyeOff } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Card from "../../components/ui/Card";
 import { useAuth } from "../../hooks/useAuth";
 import { FacebookIcon, GoogleIcon } from "../../components/ui/Icon";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ForgotPasswordFormData,
+  forgotPasswordSchema,
+  SignInFormData,
+  signInSchema,
+} from "./Schema";
 
 const SignInPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
+
   const { signIn, signInWithGoogle, signInWithFacebook, resetPassword } =
     useAuth();
 
-  const handleSignIn = async (e: FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+  });
 
-    if (!email || !password) {
-      setError("Please enter both email and password");
-      return;
-    }
+  const forgotPasswordForm = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
 
+  const onSignIn = async (data: SignInFormData) => {
     try {
       setIsLoading(true);
       setError("");
-      await signIn(email, password);
+      await signIn(data.email, data.password);
       navigate("/dashboard");
     } catch (err) {
       const errorMessage =
@@ -48,19 +55,13 @@ const SignInPage = () => {
     }
   };
 
-  const handleForgotPassword = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!email) {
-      setError("Please enter your email address");
-      return;
-    }
-
+  const onForgotPassword = async (data: ForgotPasswordFormData) => {
     try {
       setIsLoading(true);
       setError("");
-      await resetPassword(email);
+      await resetPassword(data.email);
       setShowForgotPassword(false);
+      reset();
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -132,29 +133,25 @@ const SignInPage = () => {
           )}
 
           {!showForgotPassword ? (
-            <form className="space-y-6" onSubmit={handleSignIn}>
-              <Input
-                label="Email Address"
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@example.com"
-                required
-                autoComplete="email"
-                disabled={isLoading}
-              />
+            <form className="space-y-6" onSubmit={handleSubmit(onSignIn)}>
+              <div>
+                <Input
+                  label="Email Address"
+                  type="email"
+                  {...register("email")}
+                  placeholder="your.email@example.com"
+                  error={errors.email?.message}
+                  disabled={isLoading}
+                />
+              </div>
 
               <div className="relative">
                 <Input
                   label="Password"
                   type={showPassword ? "text" : "password"}
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("password")}
                   placeholder="••••••••"
-                  required
-                  autoComplete="current-password"
+                  error={errors.password?.message}
                   disabled={isLoading}
                 />
                 <button
@@ -196,7 +193,10 @@ const SignInPage = () => {
               </div>
             </form>
           ) : (
-            <form className="space-y-6" onSubmit={handleForgotPassword}>
+            <form
+              className="space-y-6"
+              onSubmit={forgotPasswordForm.handleSubmit(onForgotPassword)}
+            >
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Reset Password
@@ -205,19 +205,15 @@ const SignInPage = () => {
                   Enter your email address and we'll send you a link to reset
                   your password.
                 </p>
+                <Input
+                  label="Email Address"
+                  type="email"
+                  {...forgotPasswordForm.register("email")}
+                  placeholder="your.email@example.com"
+                  error={forgotPasswordForm.formState.errors.email?.message}
+                  disabled={isLoading}
+                />
               </div>
-
-              <Input
-                label="Email Address"
-                type="email"
-                id="reset-email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@example.com"
-                required
-                autoComplete="email"
-                disabled={isLoading}
-              />
 
               <div className="flex gap-3">
                 <Button
