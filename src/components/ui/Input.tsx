@@ -1,46 +1,40 @@
-import { InputHTMLAttributes, forwardRef } from 'react';
-import { clsx } from 'clsx';
+import { forwardRef } from "react";
+import { clsx } from "clsx";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
-  fullWidth?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, fullWidth = true, className, id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
-
+  ({ label, error, className, ...props }, ref) => {
     return (
-      <div className={clsx(fullWidth && 'w-full')}>
+      <div>
         {label && (
-          <label 
-            htmlFor={inputId} 
+          <label
+            htmlFor={props.id}
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             {label}
           </label>
         )}
-        
         <input
-          id={inputId}
           ref={ref}
           className={clsx(
-            'input',
-            error && 'border-error-500 focus:ring-error-500 focus:border-error-500',
+            "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm",
+            error
+              ? "border-error-300 text-error-900"
+              : "border-gray-300 text-gray-900",
             className
           )}
           {...props}
         />
-        
-        {error && (
-          <p className="mt-1 text-sm text-error-600">{error}</p>
-        )}
+        {error && <p className="mt-1 text-sm text-error-600">{error}</p>}
       </div>
     );
   }
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 export default Input;
