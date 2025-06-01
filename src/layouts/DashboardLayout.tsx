@@ -84,6 +84,7 @@ const DashboardLayout = () => {
           <nav className="flex-1 py-6 px-4 space-y-1">
             {navItems.map((item) => (
               <NavLink
+                end
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>

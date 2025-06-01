@@ -287,15 +287,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "http://example.com/account/reset-password",
+        redirectTo: `${window.location.origin}/reset-password`,
       });
-
       if (error) throw error;
 
       toast.success("Password reset link sent to your email!");
     } catch (error) {
-      console.error("Error resetting password:", error);
-      toast.error("Failed to send reset password link");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send reset password link";
+      toast.error(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);
