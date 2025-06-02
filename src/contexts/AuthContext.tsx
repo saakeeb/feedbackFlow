@@ -9,13 +9,13 @@ import { AuthContextType, User } from "../types";
 import supabase from "../lib/supabase";
 import toast from "react-hot-toast";
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
-
 const resetPasswordRedirectUrl = `${
   import.meta.env.VITE_HOSTNAME
 }/reset-password`;
+
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
