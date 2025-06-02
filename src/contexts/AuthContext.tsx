@@ -9,6 +9,10 @@ import { AuthContextType, User } from "../types";
 import supabase from "../lib/supabase";
 import toast from "react-hot-toast";
 
+const resetPasswordRedirectUrl = `${
+  import.meta.env.VITE_HOSTNAME
+}/reset-password`;
+
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
@@ -287,7 +291,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: resetPasswordRedirectUrl,
       });
       if (error) throw error;
 

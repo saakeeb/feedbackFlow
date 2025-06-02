@@ -1,14 +1,15 @@
-import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MessageSquare, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import supabase from '../../lib/supabase';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MessageSquare, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { resetPasswordSchema, type ResetPasswordFormData } from "./Schema";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import supabase from "../../lib/supabase";
 
 const ResetPasswordPage = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,36 +17,32 @@ const ResetPasswordPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const handleResetPassword = async (e: FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+  });
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+  const onSubmit = async (data: ResetPasswordFormData) => {
     try {
       setIsLoading(true);
       setError(null);
 
       const { error: updateError } = await supabase.auth.updateUser({
-        password: password,
+        password: data.password,
       });
 
       if (updateError) throw updateError;
 
       setIsSuccess(true);
       setTimeout(() => {
-        navigate('/signin');
+        navigate("/signin");
       }, 3000);
     } catch (err) {
-      console.error('Error resetting password:', err);
-      setError('Failed to reset password. Please try again.');
+      console.error("Error resetting password:", err);
+      setError("Failed to reset password. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +55,9 @@ const ResetPasswordPage = () => {
           {isSuccess ? (
             <div className="text-center p-6">
               <MessageSquare className="h-12 w-12 text-success-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successfully</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Password Reset Successfully
+              </h2>
               <p className="text-gray-600 mb-6">
                 Your password has been reset. Redirecting to sign in...
               </p>
@@ -67,7 +66,9 @@ const ResetPasswordPage = () => {
             <div className="p-6">
               <div className="text-center mb-6">
                 <MessageSquare className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900">Reset Your Password</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Reset Your Password
+                </h2>
                 <p className="text-gray-600 mt-2">
                   Please enter your new password below.
                 </p>
@@ -80,15 +81,14 @@ const ResetPasswordPage = () => {
                 </div>
               )}
 
-              <form onSubmit={handleResetPassword} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="relative">
                   <Input
                     label="New Password"
                     type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    {...register("password")}
+                    error={errors.password?.message}
                     placeholder="••••••••"
-                    required
                     disabled={isLoading}
                   />
                   <button
@@ -108,10 +108,9 @@ const ResetPasswordPage = () => {
                   <Input
                     label="Confirm New Password"
                     type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    {...register("confirmPassword")}
+                    error={errors.confirmPassword?.message}
                     placeholder="••••••••"
-                    required
                     disabled={isLoading}
                   />
                   <button
