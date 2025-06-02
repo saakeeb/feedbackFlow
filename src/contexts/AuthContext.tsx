@@ -13,6 +13,10 @@ export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
 
+const resetPasswordRedirectUrl = `${
+  import.meta.env.VITE_HOSTNAME
+}/reset-password`;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -287,7 +291,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: resetPasswordRedirectUrl,
       });
       if (error) throw error;
 
