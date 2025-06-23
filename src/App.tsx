@@ -16,6 +16,7 @@ import DashboardPage from "./pages/dashboard/DashboardPage";
 import TopicsPage from "./pages/dashboard/TopicsPage";
 import TopicDetailsPage from "./pages/dashboard/TopicDetailsPage";
 import CreateTopicPage from "./pages/dashboard/CreateTopicPage";
+import EditTopicPage from "./pages/dashboard/EditTopicPage";
 import PublicTopicPage from "./pages/public/PublicTopicPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -60,6 +61,10 @@ function App() {
           <Route
             path="/dashboard/topics/:topicId"
             element={<TopicDetailsPage />}
+          />
+          <Route
+            path="/dashboard/topics/:topicId/edit"
+            element={<EditTopicPage />}
           />
         </Route>
       </Route>

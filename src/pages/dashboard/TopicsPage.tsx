@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Loader2, Search, MessageSquare, Trash2, MoreHorizontal, Archive } from 'lucide-react';
+import { Plus, Loader2, Search, MessageSquare, MoreHorizontal } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import EmptyState from '../../components/ui/EmptyState';
 import { useAuth } from '../../hooks/useAuth';
@@ -68,13 +68,15 @@ const TopicsPage = () => {
 
       <div className="bg-white rounded-lg shadow-card p-6">
         <div className="mb-6">
-          <Input
-            placeholder="Search topics..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-            leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-          />
+          <div className="relative max-w-md">
+            <Input
+              placeholder="Search topics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          </div>
         </div>
 
         {isLoading ? (
