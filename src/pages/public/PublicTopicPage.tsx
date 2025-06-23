@@ -1,6 +1,9 @@
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { MessageSquare, Send, User, AlertCircle, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import Card, {
   CardHeader,
   CardTitle,
@@ -15,6 +18,22 @@ import { useComments } from "../../hooks/useComments";
 import { format } from "date-fns";
 import { MetaTags } from "../../components/meta/MetaTags";
 
+const commentSchema = z.object({
+  content: z.string().min(10, "Please enter your feedback").max(1000, "Feedback must be less than 1000 characters"),
+  authorName: z.string().optional(),
+  isAnonymous: z.boolean(),
+}).refine((data) => {
+  if (!data.isAnonymous) {
+    return data.authorName && data.authorName.trim().length > 0;
+  }
+  return true;
+}, {
+  message: "Please enter your name when not submitting anonymously",
+  path: ["authorName"],
+});
+
+type CommentFormData = z.infer<typeof commentSchema>;
+
 const PublicTopicPage = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const { user, isAuthenticated } = useAuth();
@@ -26,11 +45,24 @@ const PublicTopicPage = () => {
     isLoading: isCommentsLoading,
   } = useComments(topicId);
 
-  const [commentContent, setCommentContent] = useState("");
-  const [authorName, setAuthorName] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(true);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<CommentFormData>({
+    resolver: zodResolver(commentSchema),
+    defaultValues: {
+      content: "",
+      authorName: "",
+      isAnonymous: true,
+    },
+  });
 
   useEffect(() => {
     if (topicId) {
@@ -39,48 +71,50 @@ const PublicTopicPage = () => {
     }
   }, [topicId, fetchTopic, fetchComments]);
 
+  // Ensure checkbox is checked by default for unauthenticated users
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setIsAnonymous(true);
+      setValue("isAnonymous", true);
+    }
+  }, [isAuthenticated, setValue]);
+
   useEffect(() => {
     // Prefill author name for authenticated users
     if (isAuthenticated && user) {
-      setAuthorName(user.fullName || user.email.split("@")[0]);
+      setValue("authorName", user.fullName || user.email.split("@")[0]);
       setIsAnonymous(false);
+      setValue("isAnonymous", false);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, setValue]);
+
+  const handleAnonymousChange = (checked: boolean) => {
+    console.log('Checkbox changed to:', checked);
+    setIsAnonymous(checked);
+    setValue("isAnonymous", checked);
+  };
 
   if (!topicId) {
     return <div>Invalid topic ID</div>;
   }
 
-  const handleSubmitComment = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!commentContent.trim()) {
-      setError("Please enter your feedback");
-      return;
-    }
-
-    if (!isAnonymous && !authorName.trim()) {
-      setError("Please enter your name");
-      return;
-    }
-
+  const onSubmit = async (data: CommentFormData) => {
     try {
       setIsSubmitting(true);
       setError("");
 
       await addComment(
-        commentContent.trim(),
-        isAnonymous ? "Anonymous" : authorName.trim(),
-        isAnonymous
+        data.content.trim(),
+        data.isAnonymous ? "Anonymous" : data.authorName!.trim(),
+        data.isAnonymous
       );
 
       // Reset form
-      setCommentContent("");
-
-      // Don't reset author name for authenticated users
-      if (!isAuthenticated && !isAnonymous) {
-        setAuthorName("");
-      }
+      reset({
+        content: "",
+        authorName: isAuthenticated && user ? (user.fullName || user.email.split("@")[0]) : "",
+        isAnonymous: isAuthenticated ? false : true,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -171,15 +205,14 @@ const PublicTopicPage = () => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmitComment}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="space-y-4">
                     <TextArea
                       label="Your Feedback"
                       id="comment"
-                      value={commentContent}
-                      onChange={(e) => setCommentContent(e.target.value)}
+                      {...register("content")}
                       placeholder="Share your thoughts, ideas, or suggestions..."
-                      required
+                      error={errors.content?.message}
                       disabled={isSubmitting}
                     />
 
@@ -187,10 +220,9 @@ const PublicTopicPage = () => {
                       <Input
                         label="Your Name"
                         id="authorName"
-                        value={authorName}
-                        onChange={(e) => setAuthorName(e.target.value)}
+                        {...register("authorName")}
                         placeholder="Enter your name"
-                        required
+                        error={errors.authorName?.message}
                         disabled={isSubmitting}
                       />
                     )}
@@ -200,7 +232,7 @@ const PublicTopicPage = () => {
                         type="checkbox"
                         id="anonymous"
                         checked={isAnonymous}
-                        onChange={(e) => setIsAnonymous(e.target.checked)}
+                        onChange={(e) => handleAnonymousChange(e.target.checked)}
                         className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                         disabled={isSubmitting}
                       />

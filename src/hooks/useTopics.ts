@@ -162,7 +162,10 @@ export const useTopics = (userId?: string) => {
           updated_at: new Date().toISOString(),
         })
         .eq('id', topicId)
-        .select()
+        .select(`
+          *,
+          comments:comments(count)
+        `)
         .single();
       
       if (error) throw error;
@@ -176,16 +179,14 @@ export const useTopics = (userId?: string) => {
         category: data.category,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
-        commentCount: currentTopic?.commentCount || 0,
+        commentCount: data.comments[0]?.count ?? 0,
       };
       
       setTopics(prev => prev.map(topic => (
         topic.id === topicId ? updatedTopic : topic
       )));
       
-      if (currentTopic?.id === topicId) {
-        setCurrentTopic(updatedTopic);
-      }
+      setCurrentTopic(prev => prev?.id === topicId ? updatedTopic : prev);
       
       toast.success('Topic updated successfully!');
       return updatedTopic;
@@ -196,7 +197,7 @@ export const useTopics = (userId?: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentTopic]);
+  }, []);
 
   const deleteTopic = useCallback(async (topicId: string) => {
     try {
@@ -211,9 +212,7 @@ export const useTopics = (userId?: string) => {
       
       setTopics(prev => prev.filter(topic => topic.id !== topicId));
       
-      if (currentTopic?.id === topicId) {
-        setCurrentTopic(null);
-      }
+      setCurrentTopic(prev => prev?.id === topicId ? null : prev);
       
       toast.success('Topic deleted successfully!');
       return true;
@@ -224,7 +223,7 @@ export const useTopics = (userId?: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentTopic]);
+  }, []);
 
   return {
     topics,

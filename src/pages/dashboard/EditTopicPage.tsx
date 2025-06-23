@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { CheckCircle, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { CheckCircle, X, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,40 +24,30 @@ const CATEGORIES = [
   "Other",
 ];
 
-const createTopicSchema = z
-  .object({
-    title: z
-      .string()
-      .min(1, "Title is required")
-      .max(100, "Title must be less than 100 characters"),
-    description: z
-      .string()
-      .max(1000, "Description must be less than 1000 characters")
-      .optional(),
-    category: z.string().min(1, "Category is required"),
-    customCategory: z.string().optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.category === "Other") {
-        return data.customCategory && data.customCategory.trim().length > 0;
-      }
-      return true;
-    },
-    {
-      message: "Custom category is required when 'Other' is selected",
-      path: ["customCategory"],
-    }
-  );
+const editTopicSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
+  description: z.string().max(1000, "Description must be less than 1000 characters").optional(),
+  category: z.string().min(1, "Category is required"),
+  customCategory: z.string().optional(),
+}).refine((data) => {
+  if (data.category === "Other") {
+    return data.customCategory && data.customCategory.trim().length > 0;
+  }
+  return true;
+}, {
+  message: "Custom category is required when 'Other' is selected",
+  path: ["customCategory"],
+});
 
-type CreateTopicFormData = z.infer<typeof createTopicSchema>;
+type EditTopicFormData = z.infer<typeof editTopicSchema>;
 
-const CreateTopicPage = () => {
+const EditTopicPage = () => {
+  const { topicId } = useParams<{ topicId: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const { user } = useAuth();
-  const { createTopic } = useTopics(user?.id);
+  const { currentTopic, fetchTopic, updateTopic } = useTopics(user?.id);
   const navigate = useNavigate();
 
   const {
@@ -65,9 +55,10 @@ const CreateTopicPage = () => {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
-  } = useForm<CreateTopicFormData>({
-    resolver: zodResolver(createTopicSchema),
+  } = useForm<EditTopicFormData>({
+    resolver: zodResolver(editTopicSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -78,6 +69,25 @@ const CreateTopicPage = () => {
 
   const selectedCategory = watch("category");
 
+  useEffect(() => {
+    if (topicId && user?.id) {
+      fetchTopic(topicId);
+    }
+  }, [topicId, user?.id, fetchTopic]);
+
+  useEffect(() => {
+    if (currentTopic) {
+      const isCustomCategory = currentTopic.category && !CATEGORIES.includes(currentTopic.category);
+      
+      reset({
+        title: currentTopic.title,
+        description: currentTopic.description || "",
+        category: isCustomCategory ? "Other" : (currentTopic.category || ""),
+        customCategory: isCustomCategory ? (currentTopic.category || "") : "",
+      });
+    }
+  }, [currentTopic, reset]);
+
   const handleCategorySelect = (selectedCategory: string) => {
     setValue("category", selectedCategory);
     if (selectedCategory !== "Other") {
@@ -85,43 +95,52 @@ const CreateTopicPage = () => {
     }
   };
 
-  const onSubmit = async (data: CreateTopicFormData) => {
+  const onSubmit = async (data: EditTopicFormData) => {
+    if (!topicId) return;
+
     try {
       setIsLoading(true);
       setError("");
 
       // Use custom category if 'Other' is selected
-      const finalCategory =
-        data.category === "Other" ? data.customCategory! : data.category;
+      const finalCategory = data.category === "Other" ? data.customCategory! : data.category;
 
-      const newTopic = await createTopic({
+      const updatedTopic = await updateTopic(topicId, {
         title: data.title.trim(),
         description: data.description?.trim() || "",
         category: finalCategory.trim(),
       });
 
-      if (newTopic) {
-        navigate(`/dashboard/topics/${newTopic.id}`);
-      } else {
-        setError("Failed to create topic. Please try again.");
+      if (updatedTopic) {
+        // Refetch the topic to ensure the state is properly updated
+        await fetchTopic(topicId);
+        navigate(`/dashboard/topics/${topicId}`);
       }
     } catch (err) {
-      console.error("Create topic error:", err);
-      setError(`Failed to create topic. Please try again, ${err}`);
+      console.error('Update error:', err);
+      setError(`Failed to update topic. Please try again, ${err}`);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (!currentTopic) {
+    return (
+      <div className="flex justify-center py-12">
+        <Loader2 className="h-8 w-8 text-primary-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto">
       <Card>
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-gray-900">
-            Create a New Topic
+            Edit Topic
           </h2>
           <p className="text-gray-500 mt-1">
-            Create a topic to collect feedback from your users.
+            Update your topic details and settings.
           </p>
         </div>
 
@@ -177,9 +196,7 @@ const CreateTopicPage = () => {
                 ))}
               </div>
               {errors.category && (
-                <p className="mt-1 text-sm text-error-600">
-                  {errors.category.message}
-                </p>
+                <p className="mt-1 text-sm text-error-600">{errors.category.message}</p>
               )}
 
               {selectedCategory === "Other" && (
@@ -200,7 +217,7 @@ const CreateTopicPage = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => navigate("/dashboard/topics")}
+                onClick={() => navigate(`/dashboard/topics/${topicId}`)}
                 disabled={isLoading}
               >
                 Cancel
@@ -211,7 +228,7 @@ const CreateTopicPage = () => {
                 isLoading={isLoading}
                 disabled={isLoading}
               >
-                Create Topic
+                Update Topic
               </Button>
             </div>
           </div>
@@ -221,4 +238,4 @@ const CreateTopicPage = () => {
   );
 };
 
-export default CreateTopicPage;
+export default EditTopicPage; 

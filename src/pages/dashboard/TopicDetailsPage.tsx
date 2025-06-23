@@ -1,25 +1,47 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { 
-  MessageSquare, Share2, Edit, Archive, 
-  Trash2, ExternalLink, Copy, CheckCircle, 
-  AlertCircle, Loader2 
-} from 'lucide-react';
-import Card, { CardHeader, CardTitle, CardContent, CardFooter } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import Badge from '../../components/ui/Badge';
-import { useAuth } from '../../hooks/useAuth';
-import { useTopics } from '../../hooks/useTopics';
-import { useComments } from '../../hooks/useComments';
-import { formatDistanceToNow, format } from 'date-fns';
-import toast from 'react-hot-toast';
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import {
+  MessageSquare,
+  Share2,
+  Edit,
+  Archive,
+  Trash2,
+  ExternalLink,
+  Copy,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import Card, {
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Badge from "../../components/ui/Badge";
+import { useAuth } from "../../hooks/useAuth";
+import { useTopics } from "../../hooks/useTopics";
+import { useComments } from "../../hooks/useComments";
+import { formatDistanceToNow, format } from "date-fns";
+import toast from "react-hot-toast";
 
 const TopicDetailsPage = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { currentTopic, fetchTopic, updateTopic, deleteTopic, isLoading: isTopicLoading } = useTopics(user?.id);
-  const { comments, fetchComments, isLoading: isCommentsLoading } = useComments(topicId);
+  const {
+    currentTopic,
+    fetchTopic,
+    updateTopic,
+    deleteTopic,
+    isLoading: isTopicLoading,
+  } = useTopics(user?.id);
+  const {
+    comments,
+    fetchComments,
+    isLoading: isCommentsLoading,
+  } = useComments(topicId);
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -36,44 +58,44 @@ const TopicDetailsPage = () => {
 
   const handleShareLink = () => {
     const shareUrl = `${window.location.origin}/t/${topicId}`;
-    
+
     navigator.clipboard.writeText(shareUrl).then(
       () => {
         setCopied(true);
-        toast.success('Link copied to clipboard!');
+        toast.success("Link copied to clipboard!");
         setTimeout(() => setCopied(false), 2000);
       },
       (err) => {
-        console.error('Could not copy text: ', err);
-        toast.error('Failed to copy link');
+        console.error("Could not copy text: ", err);
+        toast.error("Failed to copy link");
       }
     );
   };
 
   const handleArchiveTopic = async () => {
     if (!currentTopic) return;
-    
+
     await updateTopic(topicId, {
-      isArchived: !currentTopic.isArchived
+      isArchived: !currentTopic.isArchived,
     });
-    
+
     toast.success(
-      currentTopic.isArchived 
-        ? 'Topic has been unarchived!' 
-        : 'Topic has been archived!'
+      currentTopic.isArchived
+        ? "Topic has been unarchived!"
+        : "Topic has been archived!"
     );
   };
 
   const handleDeleteTopic = async () => {
     if (confirmDelete) {
       const success = await deleteTopic(topicId);
-      
+
       if (success) {
-        navigate('/dashboard/topics');
+        navigate("/dashboard/topics");
       }
     } else {
       setConfirmDelete(true);
-      
+
       // Reset after 5 seconds
       setTimeout(() => {
         setConfirmDelete(false);
@@ -105,11 +127,14 @@ const TopicDetailsPage = () => {
                   <Badge variant="warning">Archived</Badge>
                 )}
                 <span className="text-sm text-gray-500">
-                  Created {formatDistanceToNow(new Date(currentTopic.createdAt), { addSuffix: true })}
+                  Created{" "}
+                  {formatDistanceToNow(new Date(currentTopic.createdAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
             </div>
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <Button
                 variant="secondary"
                 size="sm"
@@ -127,12 +152,14 @@ const TopicDetailsPage = () => {
                   Open Public Page
                 </Button>
               </Link>
-            </div>
+            </div> */}
           </div>
         </CardHeader>
         <CardContent>
           {currentTopic.description ? (
-            <p className="text-gray-700 whitespace-pre-line">{currentTopic.description}</p>
+            <p className="text-gray-700 whitespace-pre-line">
+              {currentTopic.description}
+            </p>
           ) : (
             <p className="text-gray-500 italic">No description provided</p>
           )}
@@ -166,7 +193,7 @@ const TopicDetailsPage = () => {
                 }
                 onClick={handleArchiveTopic}
               >
-                {currentTopic.isArchived ? 'Unarchive' : 'Archive'}
+                {currentTopic.isArchived ? "Unarchive" : "Archive"}
               </Button>
               <Button
                 variant="error"
@@ -174,7 +201,7 @@ const TopicDetailsPage = () => {
                 leftIcon={<Trash2 className="w-4 h-4" />}
                 onClick={handleDeleteTopic}
               >
-                {confirmDelete ? 'Confirm Delete' : 'Delete'}
+                {confirmDelete ? "Confirm Delete" : "Delete"}
               </Button>
             </div>
           </div>
@@ -186,7 +213,9 @@ const TopicDetailsPage = () => {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-1">Share this topic with others</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                Share this topic with others
+              </h3>
               <p className="text-gray-500">
                 Anyone with the link can view this topic and provide feedback
               </p>
@@ -210,13 +239,14 @@ const TopicDetailsPage = () => {
                   )}
                 </button>
               </div>
-              <Button 
-                variant="primary"
-                leftIcon={<Share2 className="w-4 h-4" />}
-                onClick={handleShareLink}
-              >
-                {copied ? 'Copied!' : 'Copy'}
-              </Button>
+              <Link to={`/t/${topicId}`} target="_blank">
+                <Button
+                  variant="secondary"
+                  leftIcon={<ExternalLink className="w-4 h-4" />}
+                >
+                  Share
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>
@@ -235,27 +265,39 @@ const TopicDetailsPage = () => {
           ) : comments.length > 0 ? (
             <div className="space-y-6">
               {comments.map((comment) => (
-                <div key={comment.id} className="border border-gray-200 rounded-lg p-4">
+                <div
+                  key={comment.id}
+                  className="border border-gray-200 rounded-lg p-4"
+                >
                   <div className="flex justify-between mb-2">
                     <div className="font-medium">
                       {comment.isAnonymous ? (
-                        <span className="text-gray-600">{comment.authorName} (Anonymous)</span>
+                        <span className="text-gray-600">
+                          {comment.authorName} (Anonymous)
+                        </span>
                       ) : (
                         <span>{comment.authorName}</span>
                       )}
                     </div>
                     <span className="text-sm text-gray-500">
-                      {format(new Date(comment.createdAt), 'MMM d, yyyy • h:mm a')}
+                      {format(
+                        new Date(comment.createdAt),
+                        "MMM d, yyyy • h:mm a"
+                      )}
                     </span>
                   </div>
-                  <p className="text-gray-700 whitespace-pre-line">{comment.content}</p>
+                  <p className="text-gray-700 whitespace-pre-line">
+                    {comment.content}
+                  </p>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-8">
               <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No responses yet</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                No responses yet
+              </h3>
               <p className="text-gray-500 mb-4">
                 Share your topic link to start collecting feedback
               </p>
