@@ -18,19 +18,27 @@ import { useComments } from "../../hooks/useComments";
 import { format } from "date-fns";
 import { MetaTags } from "../../components/meta/MetaTags";
 
-const commentSchema = z.object({
-  content: z.string().min(10, "Please enter your feedback").max(1000, "Feedback must be less than 1000 characters"),
-  authorName: z.string().optional(),
-  isAnonymous: z.boolean(),
-}).refine((data) => {
-  if (!data.isAnonymous) {
-    return data.authorName && data.authorName.trim().length > 0;
-  }
-  return true;
-}, {
-  message: "Please enter your name when not submitting anonymously",
-  path: ["authorName"],
-});
+const commentSchema = z
+  .object({
+    content: z
+      .string()
+      .min(10, "Please enter your feedback")
+      .max(1000, "Feedback must be less than 1000 characters"),
+    authorName: z.string().optional(),
+    isAnonymous: z.boolean(),
+  })
+  .refine(
+    (data) => {
+      if (!data.isAnonymous) {
+        return data.authorName && data.authorName.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: "Please enter your name when not submitting anonymously",
+      path: ["authorName"],
+    }
+  );
 
 type CommentFormData = z.infer<typeof commentSchema>;
 
@@ -89,7 +97,7 @@ const PublicTopicPage = () => {
   }, [isAuthenticated, user, setValue]);
 
   const handleAnonymousChange = (checked: boolean) => {
-    console.log('Checkbox changed to:', checked);
+    console.log("Checkbox changed to:", checked);
     setIsAnonymous(checked);
     setValue("isAnonymous", checked);
   };
@@ -112,7 +120,10 @@ const PublicTopicPage = () => {
       // Reset form
       reset({
         content: "",
-        authorName: isAuthenticated && user ? (user.fullName || user.email.split("@")[0]) : "",
+        authorName:
+          isAuthenticated && user
+            ? user.fullName || user.email.split("@")[0]
+            : "",
         isAnonymous: isAuthenticated ? false : true,
       });
     } catch (err) {
@@ -168,7 +179,6 @@ const PublicTopicPage = () => {
       </div>
     );
   }
-
   return (
     <>
       <MetaTags
@@ -188,7 +198,8 @@ const PublicTopicPage = () => {
                 {currentTopic.title}
               </CardTitle>
               {currentTopic.description && (
-                <p className="mt-2 text-center text-gray-600">
+                <p style={{ whiteSpace: "pre-line" }} className="py-6 text-left px-4 border border-white/5 shadow-lg rounded-lg">
+                  {" "}
                   {currentTopic.description}
                 </p>
               )}
@@ -232,7 +243,9 @@ const PublicTopicPage = () => {
                         type="checkbox"
                         id="anonymous"
                         checked={isAnonymous}
-                        onChange={(e) => handleAnonymousChange(e.target.checked)}
+                        onChange={(e) =>
+                          handleAnonymousChange(e.target.checked)
+                        }
                         className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                         disabled={isSubmitting}
                       />
