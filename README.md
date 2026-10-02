@@ -1,111 +1,79 @@
 # FeedbackFlow 🎯
 
-> Making feedback fearless, meetings meaningful, and communication clearer.
+> A quiet workplace communication platform for honest anonymous feedback, productive meetings, and team clarity.
 
-## 🌟 Why FeedbackFlow?
+Rewritten in **Next.js (App Router)** following the comprehensive guidelines in [`architecture.md`](./architecture.md) and [`design.md`](./design.md).
 
-Ever felt hesitant to share your honest thoughts in a meeting? You're not alone. FeedbackFlow was born from the common challenge of creating open, honest workplace communication.
+---
 
-### 💡 What We Solve
+## 🌟 Architecture & Features
 
-- 🎭 **Fear of Speaking Up**: Submit feedback anonymously
-- 📝 **Lost Meeting Notes**: Keep everything in one place
-- 🔗 **Scattered Resources**: Centralize important links and documents
-- 🌉 **Team-Leadership Gap**: Bridge communication barriers
+### 1. Public Marketing & SEO-First Layer
+- **App Router Route Group `(marketing)`**:
+  - `/` — Homepage: Quiet productivity hero, interactive workspace preview, core pillars
+  - `/features` — Detailed capability breakdown
+  - `/anonymous-feedback` — In-depth guide to psychological safety and architectural anonymity
+  - `/meeting-notes` — Actionable framework for cutting status syncs and living notes
+  - `/resources` — Public directory of operating templates and handbooks
+  - `/blog` & `/blog/[slug]` — High-value editorial essays with JSON-LD Article structured data
+  - `/privacy` & `/terms` — Explicit architectural privacy disclosures and terms
+- **Dynamic SEO Engine**:
+  - `app/sitemap.ts` — Dynamic XML sitemap generation
+  - `app/robots.ts` — Search engine indexing rules (blocking private workspaces and API)
+  - `app/manifest.ts` — Web application manifest
+  - Canonical URLs and OpenGraph social metadata on all indexable pages
 
-## ✨ Features That Matter
+### 2. Authenticated Workplace Application
+- **Route Group `(app)`**:
+  - `/app` — Overview dashboard: active topics, response metrics, upcoming syncs
+  - `/app/feedback` & `/app/feedback/[id]` — Feedback topics, comment streams, and anonymous submission composer
+  - `/app/meetings` & `/app/meetings/[id]` — Meeting agendas, markdown notes, and actionable task checklists
+  - `/app/resources` & `/app/resources/[id]` — Curated team templates and culture handbooks
+  - `/app/analytics` — Engagement insights, psychological safety metrics, and topic category distribution
+  - `/app/settings` — Profile management, notification preferences, and privacy safeguards
+- **Public Feedback Direct Sharing**:
+  - `/t/[id]` — Direct, accessible link for anonymous or identified feedback submission
+- **Permanent Redirects**:
+  - `/dashboard` → `/app`
+  - `/signin` → `/login`
+  - `/dashboard/topics` → `/app/feedback`
 
-- 🔒 **Safe & Secure**
-  - Login with email or social media
-  - Anonymous feedback options
-  - Strict privacy controls
+---
 
-- 🚀 **Real-time Collaboration**
-  - Live updates
-  - Interactive discussions
-  - Meeting note sharing
+## 🛠️ Technology Stack
 
-- 📊 **Smart Insights**
-  - Usage analytics
-  - Engagement tracking
-  - Feedback patterns
+- **Framework**: [Next.js](https://nextjs.org/) (App Router, Server Components, Route Handlers)
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS with custom semantic design tokens (`design.md` Quiet Productivity)
+- **Backend & Auth**: Supabase (PostgreSQL, Row Level Security, SSR cookies via `@supabase/ssr`)
+- **Validation**: Zod schema validation
+- **Icons**: Lucide React
 
-## 🛠️ Tech Stack
+---
 
-### Frontend Magic
-```typescript
-const frontend = {
-  core: ["React 18", "TypeScript"],
-  styling: "Tailwind CSS",
-  forms: ["React Hook Form", "Zod"],
-  routing: "React Router DOM",
-  icons: "Lucide React"
-}
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+```bash
+pnpm install
 ```
 
-### Backend Power
-```typescript
-const backend = {
-  platform: "Supabase",
-  features: [
-    "Authentication",
-    "Real-time Database",
-    "File Storage",
-    "Analytics"
-  ]
-}
+### 2. Environment Variables
+Configure `.env.local` or `.env` with your Supabase credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SITE_URL=https://feedbackflow.app
 ```
 
-### Security Arsenal 🛡️
-```typescript
-const security = {
-  authentication: [
-    "JWT Tokens",
-    "OAuth 2.0 Integration",
-    "Email Verification"
-  ],
-  passwordSecurity: {
-    validation: "Strong password requirements",
-    recovery: "Secure reset flow",
-    storage: "Encrypted & salted"
-  },
-  dataProtection: "End-to-end encryption"
-}
+### 3. Run Development Server
+```bash
+pnpm dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Code Quality 💎
-```typescript
-const codeArchitecture = {
-  patterns: [
-    "Component-based Structure",
-    "Custom React Hooks",
-    "Context API State Management"
-  ],
-  principles: [
-    "SOLID Design",
-    "DRY (Don't Repeat Yourself)",
-    "Type Safety with TypeScript"
-  ],
-  testing: "Jest & React Testing Library"
-}
+### 4. Build for Production
+```bash
+pnpm build
+pnpm start
 ```
-
-## 🎯 Real-World Impact
-
-### For Teams
-- 👥 Foster open communication culture
-- 📢 Share feedback without hesitation
-- 📝 Keep meeting insights organized
-- 🔄 Track action items effectively
-
-### For Leaders
-- 📊 Gain authentic team insights
-- 🎯 Make data-driven decisions
-- 🌟 Improve team engagement
-- 📈 Track communication patterns
-
-### For Organizations
-- 🚀 Boost productivity
-- 💡 Encourage innovation
-- 🤝 Build trust
-- 📈 Measure improvement

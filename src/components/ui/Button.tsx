@@ -1,69 +1,62 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
-import { clsx } from 'clsx';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-  variant?: 'primary' | 'secondary' | 'accent' | 'success' | 'error';
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
-  fullWidth?: boolean;
-  leftIcon?: ReactNode;
-  rightIcon?: ReactNode;
 }
 
-const Button = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  isLoading = false,
-  fullWidth = false,
-  leftIcon,
-  rightIcon,
-  className,
-  disabled,
-  ...props
-}: ButtonProps) => {
-  const variantClasses = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    accent: 'btn-accent',
-    success: 'btn-success',
-    error: 'btn-error',
-  };
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      disabled,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const baseStyles =
+      'inline-flex items-center justify-center font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-slate-900 disabled:opacity-50 disabled:pointer-events-none select-none';
 
-  const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
-  };
+    const variants = {
+      primary:
+        'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 shadow-subtle',
+      secondary:
+        'bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300',
+      outline:
+        'border border-slate-300 bg-transparent text-slate-800 hover:bg-slate-50 active:bg-slate-100',
+      ghost:
+        'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200',
+      destructive:
+        'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-subtle',
+    };
 
-  return (
-    <button
-      className={clsx(
-        'btn',
-        variantClasses[variant],
-        sizeClasses[size],
-        fullWidth && 'w-full',
-        disabled && 'opacity-70 cursor-not-allowed',
-        className
-      )}
-      disabled={disabled || isLoading}
-      {...props}
-    >
-      {isLoading ? (
-        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-      ) : leftIcon ? (
-        <span className="mr-2">{leftIcon}</span>
-      ) : null}
-      
-      {children}
-      
-      {!isLoading && rightIcon && (
-        <span className="ml-2">{rightIcon}</span>
-      )}
-    </button>
-  );
-};
+    const sizes = {
+      sm: 'h-8 px-3 text-xs gap-1.5',
+      md: 'h-10 px-4 text-sm gap-2',
+      lg: 'h-11 px-5 text-base gap-2.5',
+    };
 
+    return (
+      <button
+        ref={ref}
+        disabled={disabled || isLoading}
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
+        {...props}
+      >
+        {isLoading && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
+        {children}
+      </button>
+    );
+  }
+);
+
+Button.displayName = 'Button';
 export default Button;

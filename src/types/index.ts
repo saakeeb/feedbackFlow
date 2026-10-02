@@ -1,34 +1,9 @@
-export interface User {
-  id: string;
-  email: string;
-  fullName?: string;
-  avatarUrl?: string | null;
-}
-
-export interface Topic {
-  id: string;
-  title: string;
-  description: string | null;
-  userId: string;
-  isArchived: boolean;
-  category: string | null;
-  createdAt: string;
-  updatedAt: string;
-  commentCount?: number;
-}
-
-export interface Comment {
-  id: string;
-  content: string;
-  topicId: string;
-  userId: string | null;
-  authorName: string;
-  isAnonymous: boolean;
-  createdAt: string;
-}
+export * from './common';
+export * from './database';
+export * from './api';
 
 export interface AuthState {
-  user: User | null;
+  user: import('./common').User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
