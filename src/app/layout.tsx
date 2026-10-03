@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 import { defaultMetadata } from '@/config/seo';
 import AuthProvider from '@/components/auth/AuthProvider';
 import ToastProvider from '@/components/ui/ToastProvider';
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className="font-sans antialiased text-slate-900 bg-slate-50/50 min-h-screen">
         <AuthProvider>
           <ToastProvider />
+          <Analytics />
           {children}
         </AuthProvider>
       </body>

@@ -1,22 +1,28 @@
 {
   "name": "feedback-collection-app",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "sideEffects": [
     "*.css",
     "./src/styles/globals.css"
   ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.38.4",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^1.2.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
