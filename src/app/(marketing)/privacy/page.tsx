@@ -9,37 +9,40 @@ export const metadata = constructMetadata({
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 space-y-8">
-      <div className="space-y-3 border-b border-slate-200 pb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+    <div className="mx-auto max-w-4xl px-4 py-16 sm:py-24 sm:px-8 space-y-12">
+      <div className="space-y-4 border-b border-white/10 pb-8">
+        <span className="font-mono text-xs uppercase tracking-widest text-[#9a9a95]">
+          Legal & Privacy Architecture
+        </span>
+        <h1 className="text-display font-display text-[#f5f3ee] tracking-tight uppercase leading-[0.98]">
           Privacy Policy
         </h1>
-        <p className="text-sm text-slate-500">
-          Last updated: October 2026 • Effective immediately
+        <p className="text-xs font-mono text-[#9a9a95]">
+          Last updated: October 2026 • Verified PostgreSQL row-level privacy
         </p>
       </div>
 
-      <div className="space-y-6 text-sm text-slate-700 leading-relaxed">
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+      <div className="space-y-8 text-sm sm:text-base text-[#9a9a95] leading-relaxed max-w-3xl">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             1. Anonymity Enforcement
           </h2>
           <p>
-            When you submit a comment or reflection with the "Submit anonymously" toggle enabled, our server and database layers explicitly set the author’s user ID to null. No database relationship connects your user account or login session to that feedback row.
+            When you submit feedback with the “Send anonymously” toggle enabled, our application and database layers explicitly decouple the record by setting the author’s user ID column to null. No foreign key, index, or internal relational link connects your user profile or authentication session to that row.
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             2. Metadata Scrubbing
           </h2>
           <p>
-            We strip IP addresses, user agent strings, and system fingerprints from anonymous feedback payloads. Workspace administrators and moderators cannot view identifying telemetry for anonymous submissions.
+            Client IP addresses, browser user agent strings, and hardware fingerprints are stripped from anonymous submission payloads. Workspace administrators and team leads cannot inspect correlating telemetry.
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             3. Account & Workspace Data
           </h2>
           <p>
@@ -47,17 +50,17 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             4. Third-Party Sharing
           </h2>
           <p>
-            FeedbackFlow does not sell personal information or data to third-party data brokers or advertising networks. We use essential service providers (e.g. Supabase, hosting infrastructure) exclusively to provide application functionality.
+            FeedbackFlow does not sell personal information or team conversations to third-party data brokers or advertising networks. We use essential infrastructure providers solely to host the application reliably.
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             5. Contact
           </h2>
           <p>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'outline';
+  variant?: 'default' | 'secondary' | 'accent' | 'success' | 'warning' | 'danger' | 'outline' | 'paper';
   size?: 'sm' | 'md';
 }
 
@@ -14,13 +14,14 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variants = {
-    default: 'bg-slate-900 text-white',
-    secondary: 'bg-slate-100 text-slate-700 border border-slate-200',
-    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    warning: 'bg-amber-50 text-amber-800 border border-amber-200',
-    danger: 'bg-rose-50 text-rose-700 border border-rose-200',
-    info: 'bg-blue-50 text-blue-700 border border-blue-200',
-    outline: 'border border-slate-300 text-slate-700 bg-white',
+    default: 'bg-white/10 text-[#f5f3ee] border border-white/15',
+    secondary: 'bg-[#1b1b1b] text-[#9a9a95] border border-white/10',
+    accent: 'bg-[#d8ff3e] text-[#0b0b0b] font-semibold border border-[#d8ff3e]',
+    success: 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30',
+    warning: 'bg-amber-950/60 text-amber-400 border border-amber-500/30',
+    danger: 'bg-rose-950/60 text-rose-400 border border-rose-500/30',
+    outline: 'border border-white/20 text-[#f5f3ee] bg-transparent',
+    paper: 'border border-black/15 bg-black/5 text-[#111111]',
   };
 
   const sizes = {
@@ -31,7 +32,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 font-medium rounded-full',
+        'inline-flex items-center gap-1 font-medium rounded-full tracking-wide',
         variants[variant],
         sizes[size],
         className

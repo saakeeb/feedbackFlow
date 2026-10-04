@@ -18,7 +18,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-sm font-medium text-slate-900"
+            className="block text-xs font-semibold uppercase tracking-wider text-[#9a9a95]"
           >
             {label}
           </label>
@@ -32,19 +32,19 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             error ? `${textareaId}-error` : helperText ? `${textareaId}-desc` : undefined
           }
           className={cn(
-            'flex w-full rounded-md border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:border-transparent disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-75 resize-y',
+            'flex w-full rounded-md border border-white/15 bg-[#141414] p-3 text-sm text-[#f5f3ee] placeholder:text-[#9a9a95]/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#d8ff3e] focus-visible:border-[#d8ff3e] disabled:cursor-not-allowed disabled:opacity-40 resize-y',
             error && 'border-red-500 focus-visible:ring-red-500',
             className
           )}
           {...props}
         />
         {error && (
-          <p id={`${textareaId}-error`} className="text-xs text-red-600 font-medium">
+          <p id={`${textareaId}-error`} className="text-xs text-rose-400 font-medium">
             {error}
           </p>
         )}
         {!error && helperText && (
-          <p id={`${textareaId}-desc`} className="text-xs text-slate-500">
+          <p id={`${textareaId}-desc`} className="text-xs text-[#9a9a95]">
             {helperText}
           </p>
         )}

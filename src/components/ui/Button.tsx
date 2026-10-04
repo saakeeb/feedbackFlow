@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'paper';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
 }
@@ -23,25 +23,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-slate-900 disabled:opacity-50 disabled:pointer-events-none select-none';
+      'inline-flex items-center justify-center font-medium rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d8ff3e] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b] disabled:opacity-40 disabled:pointer-events-none select-none';
 
     const variants = {
       primary:
-        'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 shadow-subtle',
+        'bg-[#d8ff3e] text-[#0b0b0b] font-semibold hover:bg-[#cbf52b] active:bg-[#bee424] shadow-subtle',
       secondary:
-        'bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300',
+        'bg-[#1b1b1b] border border-white/15 text-[#f5f3ee] hover:bg-[#242424] active:bg-[#2b2b2b]',
       outline:
-        'border border-slate-300 bg-transparent text-slate-800 hover:bg-slate-50 active:bg-slate-100',
+        'border border-white/20 bg-transparent text-[#f5f3ee] hover:bg-white/5 active:bg-white/10',
       ghost:
-        'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200',
+        'bg-transparent text-[#f5f3ee]/80 hover:text-[#f5f3ee] hover:bg-white/5 active:bg-white/10',
       destructive:
-        'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-subtle',
+        'bg-red-600/90 text-white hover:bg-red-600 active:bg-red-700',
+      paper:
+        'bg-[#111111] text-[#f5f3ee] hover:bg-[#222222] active:bg-[#000000]',
     };
 
     const sizes = {
       sm: 'h-8 px-3 text-xs gap-1.5',
       md: 'h-10 px-4 text-sm gap-2',
-      lg: 'h-11 px-5 text-base gap-2.5',
+      lg: 'h-12 px-6 text-sm md:text-base gap-2.5 font-medium tracking-tight',
     };
 
     return (
