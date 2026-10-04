@@ -8,21 +8,27 @@ import { feedbackService } from '@/services/feedback.service';
 import { useAuth } from '@/hooks/use-auth';
 import type { Comment } from '@/types/common';
 import toast from 'react-hot-toast';
-import { ShieldCheck, UserCheck } from 'lucide-react';
+import { ShieldCheck, UserCheck, Sparkles, X, ArrowRight } from 'lucide-react';
 
 interface CommentComposerProps {
   topicId: string;
+  selectedParagraphText?: string | null;
+  selectedParagraphIndex?: number | null;
+  onClearSelectedParagraph?: () => void;
   onCommentSubmitted: (comment: Comment) => void;
 }
 
 export function CommentComposer({
   topicId,
+  selectedParagraphText,
+  selectedParagraphIndex,
+  onClearSelectedParagraph,
   onCommentSubmitted,
 }: CommentComposerProps) {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [authorName, setAuthorName] = useState(user?.fullName || '');
-  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -30,16 +36,25 @@ export function CommentComposer({
     e.preventDefault();
 
     if (!content.trim() || content.trim().length < 5) {
-      setError('Feedback must be at least 5 characters long.');
+      setError('Constructive feedback should be at least 5 characters long.');
       return;
     }
     setError('');
+
+    // Prepend paragraph context if selected
+    let fullCommentContent = content.trim();
+    if (selectedParagraphText && selectedParagraphIndex !== null && selectedParagraphIndex !== undefined) {
+      const truncated = selectedParagraphText.length > 120 
+        ? `${selectedParagraphText.slice(0, 120)}...` 
+        : selectedParagraphText;
+      fullCommentContent = `[Regarding § 0${selectedParagraphIndex + 1}: "${truncated}"]\n\n${content.trim()}`;
+    }
 
     try {
       setIsSubmitting(true);
       const newComment = await feedbackService.submitComment({
         topicId,
-        content,
+        content: fullCommentContent,
         authorName: isAnonymous ? 'Anonymous' : authorName || user?.fullName || 'Teammate',
         isAnonymous,
         userId: isAnonymous ? null : (user?.id || null),
@@ -47,7 +62,8 @@ export function CommentComposer({
 
       if (newComment) {
         setContent('');
-        toast.success('Feedback submitted.');
+        if (onClearSelectedParagraph) onClearSelectedParagraph();
+        toast.success(isAnonymous ? 'Feedback sent anonymously.' : 'Feedback submitted.');
         onCommentSubmitted(newComment);
       }
     } catch {
@@ -60,59 +76,97 @@ export function CommentComposer({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-lg border border-slate-200 bg-white p-5 space-y-4 shadow-subtle"
+      className="rounded-xl border border-white/15 bg-[#141414] p-6 space-y-5 shadow-2xl"
     >
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-900">
-          Leave your response
-        </h3>
+      {/* Header with Anonymity Status (Section 20 & 21) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div>
+          <span className="font-mono text-[11px] uppercase tracking-widest text-[#9a9a95] block">
+            Constructive Channel
+          </span>
+          <h3 className="text-base font-bold font-display uppercase tracking-tight text-[#f5f3ee]">
+            What would make this better?
+          </h3>
+        </div>
 
-        {/* Anonymity Badge Indicator */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-600">
+        {/* Anonymity Indicator Badge */}
+        <div className="flex items-center gap-2">
           {isAnonymous ? (
-            <span className="inline-flex items-center gap-1 text-slate-800 font-medium">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              Anonymous mode active
-            </span>
+            <div className="inline-flex items-center gap-1.5 text-xs text-[#d8ff3e] bg-[#d8ff3e]/10 border border-[#d8ff3e]/30 px-2.5 py-1 rounded-full font-mono">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#d8ff3e] animate-pulse" />
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>Anonymous mode active</span>
+            </div>
           ) : (
-            <span className="inline-flex items-center gap-1 text-slate-600">
-              <UserCheck className="h-4 w-4 text-slate-400" />
-              Named mode
-            </span>
+            <div className="inline-flex items-center gap-1.5 text-xs text-[#9a9a95] bg-white/5 border border-white/10 px-2.5 py-1 rounded-full font-mono">
+              <UserCheck className="h-3.5 w-3.5" />
+              <span>Named mode</span>
+            </div>
           )}
         </div>
       </div>
 
+      {/* Selected paragraph preview if applicable */}
+      {selectedParagraphText && (
+        <div className="relative rounded-lg border border-[#d8ff3e] bg-[#1a1a14] p-4 text-xs space-y-1.5">
+          <div className="flex items-center justify-between text-[#d8ff3e] font-mono">
+            <span>Attached to § 0{(selectedParagraphIndex ?? 0) + 1}</span>
+            {onClearSelectedParagraph && (
+              <button
+                type="button"
+                onClick={onClearSelectedParagraph}
+                className="text-[#9a9a95] hover:text-[#f5f3ee] flex items-center gap-1"
+              >
+                <X className="h-3 w-3" /> Detach from paragraph
+              </button>
+            )}
+          </div>
+          <p className="text-[#f5f3ee] line-clamp-2 italic">
+            “{selectedParagraphText}”
+          </p>
+        </div>
+      )}
+
+      {/* Constructive Guidance Tips (Section 22) */}
+      <div className="rounded-md border border-white/5 bg-[#0e0e0e] p-3 text-xs text-[#9a9a95] space-y-1">
+        <div className="flex items-center gap-1.5 text-[#f5f3ee] font-semibold text-[11px] uppercase tracking-wider">
+          <Sparkles className="h-3 w-3 text-[#d8ff3e]" />
+          Constructive Feedback Guide:
+        </div>
+        <p className="text-[11px]">
+          • Explain what isn't working &nbsp;• Suggest an alternative &nbsp;• Focus on the work, not the person
+        </p>
+      </div>
+
       <Textarea
-        label="Feedback content"
+        label="Your observation or suggestion"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Share your honest perspective, constructive observations, or proposed solutions..."
+        placeholder="Explain what is unclear, notice what could be improved, or suggest a concrete alternative..."
         rows={4}
         error={error}
-        helperText="Be specific, constructive, and respectful of team collaboration."
       />
 
-      <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* Anonymity Toggle */}
-        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+      <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Anonymity Toggle with explicit privacy note */}
+        <label className="flex items-start gap-3 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={isAnonymous}
             onChange={(e) => setIsAnonymous(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+            className="mt-0.5 h-4 w-4 rounded border-white/30 text-[#d8ff3e] focus:ring-[#d8ff3e] accent-[#d8ff3e]"
           />
           <div className="text-xs">
-            <span className="font-medium text-slate-900 block">
-              Submit anonymously
+            <span className="font-semibold text-[#f5f3ee] block">
+              Send anonymously
             </span>
-            <span className="text-slate-500 block">
+            <span className="text-[#9a9a95] block text-[11px]">
               Your name and identity will not be attached to this feedback.
             </span>
           </div>
         </label>
 
-        {/* Optional name if not anonymous and not signed in */}
+        {/* Optional name if not anonymous and not logged in */}
         {!isAnonymous && !user && (
           <div className="w-full sm:w-48">
             <Input
@@ -125,8 +179,14 @@ export function CommentComposer({
         )}
 
         <div className="flex justify-end">
-          <Button type="submit" isLoading={isSubmitting} size="sm">
-            Submit feedback
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            size="md"
+            className="text-xs uppercase tracking-wider font-semibold gap-1.5"
+          >
+            {isAnonymous ? 'Send anonymously' : 'Send feedback'}
+            <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>

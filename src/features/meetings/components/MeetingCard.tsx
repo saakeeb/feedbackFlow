@@ -15,12 +15,12 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   return (
     <Link
       href={`/app/meetings/${meeting.id}`}
-      className="group block rounded-lg border border-slate-200 bg-white p-5 hover:border-slate-300 hover:bg-slate-50/50 transition-colors"
+      className="group block rounded-lg border border-white/10 bg-[#141414] p-5 hover:border-white/25 hover:bg-[#181818] transition-all duration-150"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-2 flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-base font-semibold text-slate-900 group-hover:text-slate-950 truncate">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h3 className="text-base font-semibold font-display text-[#f5f3ee] group-hover:text-[#d8ff3e] transition-colors truncate">
               {meeting.title}
             </h3>
             <Badge
@@ -38,31 +38,31 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
           </div>
 
           {meeting.description && (
-            <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-[#9a9a95] line-clamp-2 leading-relaxed">
               {meeting.description}
             </p>
           )}
 
-          <div className="flex items-center gap-4 text-xs text-slate-500 pt-1 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
-              <Calendar className="h-3.5 w-3.5 text-slate-400" />
+          <div className="flex items-center gap-4 text-xs font-mono text-[#6f6f6a] pt-1 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 text-[#f5f3ee]">
+              <Calendar className="h-3.5 w-3.5 text-[#d8ff3e]" />
               {formatDate(meeting.scheduledAt)}
             </span>
             <span>•</span>
-            <span className="inline-flex items-center gap-1.5 text-slate-600">
-              <Clock className="h-3.5 w-3.5 text-slate-400" />
+            <span className="inline-flex items-center gap-1.5 text-[#9a9a95]">
+              <Clock className="h-3.5 w-3.5 text-[#6f6f6a]" />
               {meeting.durationMinutes} mins
             </span>
             <span>•</span>
-            <span className="inline-flex items-center gap-1.5 text-slate-600">
-              <Users className="h-3.5 w-3.5 text-slate-400" />
+            <span className="inline-flex items-center gap-1.5 text-[#9a9a95]">
+              <Users className="h-3.5 w-3.5 text-[#6f6f6a]" />
               {meeting.participants.length} participants
             </span>
             {totalActions > 0 && (
               <>
                 <span>•</span>
-                <span className="inline-flex items-center gap-1 text-slate-700">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                <span className="inline-flex items-center gap-1 text-[#d8ff3e]">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-[#d8ff3e]" />
                   {completedActions}/{totalActions} action items
                 </span>
               </>
@@ -70,7 +70,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
           </div>
         </div>
 
-        <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0 mt-1" />
+        <ChevronRight className="h-5 w-5 text-[#6f6f6a] group-hover:text-[#d8ff3e] transition-colors shrink-0 mt-1" />
       </div>
     </Link>
   );

@@ -9,19 +9,22 @@ export const metadata = constructMetadata({
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 space-y-8">
-      <div className="space-y-3 border-b border-slate-200 pb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+    <div className="mx-auto max-w-4xl px-4 py-16 sm:py-24 sm:px-8 space-y-12">
+      <div className="space-y-4 border-b border-white/10 pb-8">
+        <span className="font-mono text-xs uppercase tracking-widest text-[#9a9a95]">
+          Operating Terms
+        </span>
+        <h1 className="text-display font-display text-[#f5f3ee] tracking-tight uppercase leading-[0.98]">
           Terms of Service
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-xs font-mono text-[#9a9a95]">
           Last updated: October 2026
         </p>
       </div>
 
-      <div className="space-y-6 text-sm text-slate-700 leading-relaxed">
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+      <div className="space-y-8 text-sm sm:text-base text-[#9a9a95] leading-relaxed max-w-3xl">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             1. Acceptance of Terms
           </h2>
           <p>
@@ -29,17 +32,17 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             2. Acceptable Use
           </h2>
           <p>
-            FeedbackFlow is designed for honest, constructive workplace collaboration. You agree not to use the platform for unlawful harassment, defamatory attacks, or uploading harmful malicious payloads.
+            FeedbackFlow is built for honest, constructive workplace collaboration. You agree not to use the platform for unlawful harassment, defamatory attacks, or uploading harmful malicious payloads. Anonymous does not mean careless.
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             3. Workspace Ownership
           </h2>
           <p>
@@ -47,8 +50,8 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold font-display text-[#f5f3ee]">
             4. Limitation of Liability
           </h2>
           <p>

@@ -4,7 +4,7 @@ import { constructMetadata } from '@/lib/seo/metadata';
 import { Calendar, CheckCircle2, Clock, Users, ArrowRight } from 'lucide-react';
 
 export const metadata = constructMetadata({
-  title: 'Effective Meeting Notes & Agendas — The FeedbackFlow Framework',
+  title: 'Living Meeting Notes & Team Syncs — FeedbackFlow',
   description:
     'Turn wasteful status meetings into crisp, asynchronous pre-reads and accountable action items with living markdown meeting notes.',
   canonical: '/meeting-notes',
@@ -12,71 +12,82 @@ export const metadata = constructMetadata({
 
 export default function MeetingNotesPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 space-y-16">
-      <div className="space-y-4 border-b border-slate-200 pb-8 text-center sm:text-left">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Workplace Productivity
+    <div className="mx-auto max-w-5xl px-4 py-16 sm:py-24 sm:px-8 space-y-20">
+      {/* Editorial Header */}
+      <div className="space-y-6 border-b border-white/10 pb-12">
+        <span className="font-mono text-xs uppercase tracking-widest text-[#9a9a95] block">
+          Cadence & Meeting Philosophy
         </span>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 leading-tight">
-          How to run purposeful meetings with living notes
+        <h1 className="text-display font-display text-[#f5f3ee] tracking-tight uppercase leading-[0.98]">
+          Keep Syncs
+          <br />
+          Sacred.
         </h1>
-        <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-          A proven framework for cutting unnecessary syncs, documenting decisions in real time, and holding teams accountable with clear action items.
+        <p className="text-lg sm:text-xl text-[#9a9a95] leading-relaxed max-w-3xl">
+          Feedback shouldn't disappear when the meeting ends. Transform syncs into living records with pre-reads, clear takeaways, and asynchronous follow-up reflections.
         </p>
       </div>
 
+      {/* 3 Principles Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
-          <div className="text-slate-900 font-semibold text-sm flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-slate-500" />
+        <div className="rounded-xl border border-white/15 bg-[#141414] p-6 space-y-4">
+          <div className="h-9 w-9 rounded-md bg-white/5 border border-white/10 flex items-center justify-center text-[#d8ff3e]">
+            <Clock className="h-5 w-5" />
+          </div>
+          <h3 className="text-lg font-bold font-display text-[#f5f3ee]">
             30-Minute Caps
-          </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Default to shorter, high-intensity discussions. Long meetings dilute focus and invite passive attendance.
+          </h3>
+          <p className="text-xs text-[#9a9a95] leading-relaxed">
+            Default to shorter, high-intensity discussions. Long syncs dilute focus and encourage passive attendance.
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
-          <div className="text-slate-900 font-semibold text-sm flex items-center gap-1.5">
-            <Users className="h-4 w-4 text-slate-500" />
-            Essential Attendees Only
+        <div className="rounded-xl border border-white/15 bg-[#141414] p-6 space-y-4">
+          <div className="h-9 w-9 rounded-md bg-white/5 border border-white/10 flex items-center justify-center text-[#d8ff3e]">
+            <Users className="h-5 w-5" />
           </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Invite only direct decision-makers. Inform others asynchronously by sharing the final meeting notes document.
+          <h3 className="text-lg font-bold font-display text-[#f5f3ee]">
+            Essential Attendees
+          </h3>
+          <p className="text-xs text-[#9a9a95] leading-relaxed">
+            Invite only direct decision-makers. Inform the broader team asynchronously by sharing living meeting notes.
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
-          <div className="text-slate-900 font-semibold text-sm flex items-center gap-1.5">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-            Accountable Action Items
+        <div className="rounded-xl border border-white/15 bg-[#141414] p-6 space-y-4">
+          <div className="h-9 w-9 rounded-md bg-white/5 border border-white/10 flex items-center justify-center text-[#d8ff3e]">
+            <CheckCircle2 className="h-5 w-5" />
           </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <h3 className="text-lg font-bold font-display text-[#f5f3ee]">
+            Accountable Actions
+          </h3>
+          <p className="text-xs text-[#9a9a95] leading-relaxed">
             Every discussion must conclude with explicit owners and completion deadlines recorded in the integrated checklist.
           </p>
         </div>
       </div>
 
-      <div className="prose prose-slate max-w-none space-y-8 text-slate-700 text-sm sm:text-base leading-relaxed">
-        <section className="space-y-3">
-          <h2 className="text-2xl font-bold text-slate-900">
+      {/* Editorial Content */}
+      <div className="space-y-10 text-[#9a9a95] text-base leading-relaxed max-w-3xl">
+        <section className="space-y-4">
+          <h2 className="text-2xl sm:text-3xl font-bold font-display text-[#f5f3ee] tracking-tight">
             The Death of the Status Update Meeting
           </h2>
           <p>
-            One of the greatest productivity drains in tech companies is the round-robin status update. When ten engineers spend an hour reciting what they did yesterday, fifty percent of attendees zone out while waiting for their turn.
+            One of the greatest productivity drains in modern engineering and product teams is the round-robin status update. When ten people spend an hour reciting what they did yesterday, fifty percent of attendees tune out while waiting for their turn.
           </p>
           <p>
             Status updates belong in written text. Live syncs should be reserved exclusively for:
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-slate-600">
+          <ul className="list-disc pl-5 space-y-2 text-[#f5f3ee]/85">
             <li>Unblocking architectural disputes.</li>
-            <li>Aligning on cross-team dependencies.</li>
-            <li>Conducting blameless retrospectives on post-mortems and feedback.</li>
+            <li>Aligning on cross-functional product roadmap changes.</li>
+            <li>Conducting blameless retrospectives on customer feedback and incidents.</li>
           </ul>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-2xl font-bold text-slate-900">
+        <section className="space-y-4">
+          <h2 className="text-2xl sm:text-3xl font-bold font-display text-[#f5f3ee] tracking-tight">
             The Living Document Method
           </h2>
           <p>
@@ -85,17 +96,18 @@ export default function MeetingNotesPage() {
         </section>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 className="font-semibold text-slate-900 text-base">
+      {/* Bottom CTA Card */}
+      <div className="rounded-xl border border-white/15 bg-[#141414] p-8 sm:p-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-2xl">
+        <div className="space-y-2">
+          <h3 className="font-bold font-display text-xl sm:text-2xl text-[#f5f3ee] tracking-tight">
             Try FeedbackFlow Meetings
           </h3>
-          <p className="text-xs text-slate-500">
-            Schedule a meeting and test our living note-taking system.
+          <p className="text-xs sm:text-sm text-[#9a9a95]">
+            Schedule a sync and test our living note-taking system.
           </p>
         </div>
         <Link href="/app/meetings">
-          <Button size="sm" className="gap-2 shrink-0">
+          <Button size="lg" className="gap-2 shrink-0">
             Schedule a meeting
             <ArrowRight className="h-4 w-4" />
           </Button>
